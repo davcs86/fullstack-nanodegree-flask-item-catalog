@@ -1,4 +1,4 @@
-from .. import app, db
+from .. import app, session
 
 
 @app.route('/')
