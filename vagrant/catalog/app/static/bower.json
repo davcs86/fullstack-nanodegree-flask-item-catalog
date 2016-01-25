@@ -1,0 +1,27 @@
+{
+  "name": "Item catalog by davcs86",
+  "homepage": "https://github.com/davcs86/fullstack-nanodegree-flask-item-catalog",
+  "authors": [
+    "davcs86 <davcs86@gmail.com>"
+  ],
+  "description": "Project #3 for Udacity's Full stack web developer nanodegree program by davcs86",
+  "main": "",
+  "moduleType": [],
+  "keywords": [
+    "python",
+    "flask",
+    "sqlalchemy",
+    "oauth2",
+    "oauth1a",
+    "postgresql"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

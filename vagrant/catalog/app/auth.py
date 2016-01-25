@@ -1,7 +1,7 @@
-from flask import url_for, current_app, redirect, request
+from flask import url_for, session, current_app, redirect, request
 from .config import DevelopmentConfig as app_config
-from .app_setup import app, session, login_manager
-from rauth import OAuth2Service
+from .app_setup import app, db_session, login_manager
+from rauth import OAuth1Service, OAuth2Service
 import json
 import urllib2
 
@@ -91,6 +91,23 @@ class FacebookSignIn(OAuthSignIn):
             redirect_uri=self.get_callback_url())
         )
 
+    def callback(self):
+        if 'code' not in request.args:
+            return None, None, None
+        oauth_session = self.service.get_auth_session(
+            data={'code': request.args['code'],
+                  'grant_type': 'authorization_code',
+                  'redirect_uri': self.get_callback_url()}
+        )
+        me = oauth_session.get('me').json()
+        return (
+            'facebook$' + me['id'],
+            me.get('email').split('@')[0],  # Facebook does not provide
+                                            # username, so the email's user
+                                            # is used instead
+            me.get('email')
+        )
+
 
 class TwitterSignIn(OAuthSignIn):
     def __init__(self):
@@ -105,10 +122,31 @@ class TwitterSignIn(OAuthSignIn):
             base_url='https://api.twitter.com/1.1/'
         )
 
+    def authorize(self):
+        request_token = self.service.get_request_token(
+            params={'oauth_callback': self.get_callback_url()}
+        )
+        session['request_token'] = request_token
+        return redirect(self.service.get_authorize_url(request_token[0]))
+
+    def callback(self):
+        request_token = session.pop('request_token')
+        if 'oauth_verifier' not in request.args:
+            return None, None, None
+        oauth_session = self.service.get_auth_session(
+            request_token[0],
+            request_token[1],
+            data={'oauth_verifier': request.args['oauth_verifier']}
+        )
+        me = oauth_session.get('account/verify_credentials.json').json()
+        social_id = 'twitter$' + str(me.get('id'))
+        username = me.get('screen_name')
+        return social_id, username, None   # Twitter does not provide email
+
 
 class GitHubSignIn(OAuthSignIn):
     def __init__(self):
-        super(TwitterSignIn, self).__init__('github')
+        super(GitHubSignIn, self).__init__('github')
         self.service = OAuth1Service(
             name='github',
             consumer_key=self.consumer_id,

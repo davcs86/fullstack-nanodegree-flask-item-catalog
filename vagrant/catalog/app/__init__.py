@@ -1,4 +1,4 @@
-from .app_setup import app, session
+from .app_setup import app, db_session, User
 from .config import DevelopmentConfig as app_config
-from .auth import GoogleSignIn, FacebookSignIn, TwitterSignIn, GitHubSignIn
-from routes import default
+from .auth import OAuthSignIn
+from routes import default, auth
