@@ -22,11 +22,12 @@ def me():
         return render_template('profile.html')
     success = False
     user = current_user
-    pwd = request.form['current_password']
-    newpassword = request.form['new_password']
-    conpassword = request.form['confirm_password']
+    pwd = request.form.get('current_password', '')
+    newpassword = request.form.get('new_password', '')
+    conpassword = request.form.get('confirm_password', '')
     if user is None:
         flash("Session expired")
+        return redirect(url_for('login'))
     elif user.password != '' and not sha256_crypt.verify(pwd, user.password):
         flash("Wrong password")
     elif (user.password == '' or
@@ -54,8 +55,8 @@ def login():
             return redirect(url_for('index'))
         return render_template('login.html')
     # Process login
-    nickname = request.form['username']
-    password = request.form['password']
+    nickname = request.form.get('username', '')
+    password = request.form.get('password', '')
     user = db_session.query(User).filter_by(nickname=nickname).first()
     if user is None:
         flash("User not found")
@@ -79,8 +80,8 @@ def register():
             return redirect(url_for('index'))
         return render_template('login.html', is_register=True)
     # Process login
-    nickname = request.form['username']
-    password = request.form['password']
+    nickname = request.form.get('username', '')
+    password = request.form.get('password', '')
     user = db_session.query(User).filter_by(nickname=nickname).first()
     if user is not None:
         flash("Username is already registered")

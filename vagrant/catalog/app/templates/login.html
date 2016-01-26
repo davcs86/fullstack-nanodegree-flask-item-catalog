@@ -48,11 +48,11 @@
                         <!-- Button -->
                         <div class="col-sm-12 controls text-right">
                             {% if is_register == True %}
-                                <button type="submit" href="#" class="btn btn-success">Register</button>
+                                <button type="submit" class="btn btn-success">Register</button>
                             {% else %}
-                                <button type="submit" href="#" class="btn btn-success">Sign in</button>
+                                <button type="submit" class="btn btn-success">Sign in</button>
                             {% endif %}
-                            <a id="btn-login" href="{{url_for('index')}}" class="btn btn-default">Cancel</a>
+                            <a href="{{url_for('index')}}" class="btn btn-default">Cancel</a>
                         </div>
                     </div>
                 </form>

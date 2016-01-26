@@ -2,6 +2,7 @@ from .. import app, db_session, OAuthSignIn, User
 from sqlalchemy import or_
 from flask.ext.login import current_user, login_user, login_required
 from flask import flash, redirect, url_for
+from passlib.hash import sha256_crypt
 
 
 @app.route('/authorize/<provider>')
@@ -47,6 +48,7 @@ def oauth_callback(provider):
         if user is None:
             # New user, register and send it to profile page
             user = User(nickname=nickname)
+            user.password = sha256_crypt.encrypt('')
             redirect_to = 'me'
     if provider == 'google':
         user.google_id = social_id
