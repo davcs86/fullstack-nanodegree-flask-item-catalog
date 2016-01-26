@@ -8,7 +8,7 @@ class User(UserMixin, Base):
 
     id = Column(Integer, primary_key=True)
     nickname = Column(String(32), nullable=False, unique=True)
-    email = Column(String(150), nullable=True, unique=True)
+    password = Column(String(128))
     google_id = Column(String(64))
     facebook_id = Column(String(64))
     twitter_id = Column(String(64))
@@ -19,6 +19,5 @@ class User(UserMixin, Base):
         """Return object data in easily serializeable format"""
         return {
             'id': self.id,
-            'nickname': self.nickname,
-            'email': self.email
+            'nickname': self.nickname
         }

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block head %}
+    {% if is_register == True %}
+        <title>Register</title>
+        {% set active_page = "register" %}
+    {% else %}
+        <title>Login</title>
+        {% set active_page = "login" %}
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <div class="panel panel-info" >
+
+            <div class="panel-heading">
+                {% if is_register == True %}
+                    <div class="panel-title">Register</div>
+                {% else %}
+                    <div class="panel-title">Sign in</div>
+                {% endif %}
+            </div>
+            <div style="padding-top:30px" class="panel-body" >
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="alert alert-danger col-sm-12">
+                    {% for message in messages %}
+                        <div>{{message}}</div>
+                    {% endfor %}
+                    </div>
+                    {% endif %}
+                {% endwith %}
+                {% if is_register == True %}
+                    <form action="{{url_for('register')}}" method="POST" class="form-horizontal" role="form">
+                {% else %}
+                    <form action="{{url_for('login')}}" method="POST" class="form-horizontal" role="form">
+                {% endif %}
+                    <div style="margin-bottom: 25px" class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                        <input type="text" class="form-control" name="username" value="{{ usr|e }}" placeholder="Username">
+                    </div>
+                    <div style="margin-bottom: 25px" class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                        <input type="password" class="form-control" name="password" value="{{ pwd|e }}" placeholder="Password">
+                    </div>
+                    <div style="margin-top:10px" class="form-group">
+                        <!-- Button -->
+                        <div class="col-sm-12 controls text-right">
+                            {% if is_register == True %}
+                                <button type="submit" href="#" class="btn btn-success">Register</button>
+                            {% else %}
+                                <button type="submit" href="#" class="btn btn-success">Sign in</button>
+                            {% endif %}
+                            <a id="btn-login" href="{{url_for('index')}}" class="btn btn-default">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-md-6" style="padding: 6px;">
+                        <a href="{{url_for('oauth_authorize', provider='facebook')}}" class="btn btn-block btn-social btn-facebook">
+                            <span class="fa fa-facebook"></span>
+                            {% if is_register == True %}
+                                Sign up with Facebook
+                            {% else %}
+                                Sign in with Facebook
+                            {% endif %}
+                        </a>
+                    </div>
+                    <div class="col-md-6" style="padding: 6px;">
+                        <a href="{{url_for('oauth_authorize', provider='google')}}" class="btn btn-block btn-social btn-google">
+                            <span class="fa fa-google"></span>
+                            {% if is_register == True %}
+                                Sign up with Google
+                            {% else %}
+                                Sign in with Google
+                            {% endif %}
+                        </a>
+                    </div>
+                    <div class="col-md-6" style="padding: 6px;">
+                        <a href="{{url_for('oauth_authorize', provider='twitter')}}" class="btn btn-block btn-social btn-twitter">
+                            <span class="fa fa-twitter"></span>
+                            {% if is_register == True %}
+                                Sign up with Twitter
+                            {% else %}
+                                Sign in with Twitter
+                            {% endif %}
+                        </a>
+                    </div>
+                    <div class="col-md-6" style="padding: 6px;">
+                        <a href="{{url_for('oauth_authorize', provider='github')}}" class="btn btn-block btn-social btn-github">
+                            <span class="fa fa-github"></span>
+                            {% if is_register == True %}
+                                Sign up with GitHub
+                            {% else %}
+                                Sign in with GitHub
+                            {% endif %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+ </div>
+{% endblock %}

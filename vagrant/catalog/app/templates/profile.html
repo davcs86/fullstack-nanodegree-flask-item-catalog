@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block head %}
+<title>My profile</title>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <div class="panel panel-info" >
+            <div class="panel-heading">
+                <div class="panel-title">My profile</div>
+            </div>
+            <div style="padding-top:30px" class="panel-body" >
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% if is_success %}
+                        <div class="alert alert-success col-sm-12">
+                    {% else %}
+                        <div class="alert alert-danger col-sm-12">
+                    {% endif %}
+                    {% for message in messages %}
+                        <div>{{message}}</div>
+                    {% endfor %}
+                    </div>
+                    {% endif %}
+                {% endwith %}
+                <form action="{{url_for('me')}}" method="POST" class="form-horizontal" role="form">
+                    <div style="margin-bottom: 25px" class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                        <input type="text" class="form-control" disabled="disabled" name="username" value="{{ current_user.nickname|e }}" placeholder="Username">
+                    </div>
+                    <div style="margin-bottom: 25px" class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                        <input type="password" class="form-control" name="current_password" value="" placeholder="Current password">
+                    </div>
+                    <div style="margin-bottom: 25px" class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                        <input type="password" class="form-control" name="new_password" value="" placeholder="New password">
+                    </div>
+                    <div style="margin-bottom: 25px" class="input-group">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                        <input type="password" class="form-control" name="confirm_password" value="" placeholder="Confirm new password">
+                    </div>
+                    <div style="margin-top:10px" class="form-group">
+                        <!-- Button -->
+                        <div class="col-sm-12 controls text-right">
+                            <button type="submit" href="#" class="btn btn-success">Save changes</button>
+                        </div>
+                    </div>
+                </form>
+                <div class="row">
+                    <div class="col-md-6" style="padding: 6px;">
+                        {% if current_user.facebook_id is not none %}
+                            <a href="{{url_for('oauth_unlink', provider='facebook')}}" class="btn btn-block btn-social btn-facebook">
+                                <span class="fa fa-facebook"></span>
+                                Unlink Facebook account
+                            </a>
+                        {% else %}
+                            <a href="{{url_for('oauth_authorize', provider='facebook')}}" class="btn btn-block btn-social btn-facebook">
+                                <span class="fa fa-facebook"></span>
+                                Link Facebook account
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6" style="padding: 6px;">
+                        {% if current_user.google_id is not none %}
+                            <a href="{{url_for('oauth_unlink', provider='google')}}" class="btn btn-block btn-social btn-google">
+                                <span class="fa fa-google"></span>
+                                Unlink Google account
+                            </a>
+                        {% else %}
+                            <a href="{{url_for('oauth_authorize', provider='google')}}" class="btn btn-block btn-social btn-google">
+                                <span class="fa fa-google"></span>
+                                Link Google account
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6" style="padding: 6px;">
+                        {% if current_user.twitter_id is not none %}
+                            <a href="{{url_for('oauth_unlink', provider='twitter')}}" class="btn btn-block btn-social btn-twitter">
+                                <span class="fa fa-twitter"></span>
+                                Unlink Twitter account
+                            </a>
+                        {% else %}
+                            <a href="{{url_for('oauth_authorize', provider='twitter')}}" class="btn btn-block btn-social btn-twitter">
+                                <span class="fa fa-twitter"></span>
+                                Link Twitter account
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6" style="padding: 6px;">
+                        {% if current_user.github_id is not none %}
+                            <a href="{{url_for('oauth_unlink', provider='github')}}" class="btn btn-block btn-social btn-github">
+                                <span class="fa fa-github"></span>
+                                Unlink GitHub account
+                            </a>
+                        {% else %}
+                            <a href="{{url_for('oauth_authorize', provider='github')}}" class="btn btn-block btn-social btn-github">
+                                <span class="fa fa-github"></span>
+                                Link GitHub account
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

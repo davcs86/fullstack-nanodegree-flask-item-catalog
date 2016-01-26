@@ -10,8 +10,10 @@ pip install redis
 pip install passlib
 pip install itsdangerous
 pip install flask-httpauth
+pip install flask-login
 su postgres -c 'createuser -dRS vagrant'
-su vagrant -c 'psql forum -f /vagrant/catalog/catalog.sql'
+su vagrant -c 'createdb catalog'
+su postgres -c 'psql -f /vagrant/catalog/catalog.sql'
 su vagrant -c 'createdb'
 # su vagrant -c 'createdb forum'
 # su vagrant -c 'psql forum -f /vagrant/forum/forum.sql'
