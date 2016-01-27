@@ -2,6 +2,7 @@ apt-get -qqy update
 apt-get -qqy install postgresql python-psycopg2
 apt-get -qqy install python-flask python-sqlalchemy
 apt-get -qqy install python-pip
+apt-get -qqy install python-dev
 pip install bleach
 pip install oauth2client
 pip install requests
@@ -11,6 +12,11 @@ pip install passlib
 pip install itsdangerous
 pip install flask-httpauth
 pip install flask-login
+pip install rauth
+pip install flask-seasurf
+pip install flask-wtf
+pip install awesome-slugify
+pip install Flask-Uploads
 su postgres -c 'createuser -dRS vagrant'
 su vagrant -c 'createdb catalog'
 su postgres -c 'psql -f /vagrant/catalog/catalog.sql'

@@ -4,7 +4,8 @@ class Config(object):
     DEBUG = False
     DEVELOPMENT = False
     CSRF_ENABLED = True
-    SECRET_KEY = 'this-really-needs-to-be-changed'
+    CSRF_COOKIE_NAME = '_csrf_token'
+    SECRET_KEY = 'UNbPflgB8ZNQPwdY9m5owtstQwGIKIJXXfjuJeFwIYl6Mz3UqNT6VwPKBQW9'
     SQLALCHEMY_DATABASE_URI = "postgresql://vagrant:vagrant@localhost/catalog"
     OAUTH_CREDENTIALS = {
         'google': {
@@ -20,8 +21,8 @@ class Config(object):
             'secret': 'PAdJYOth7IztOcSjaeSMIaK1arVZ7BDvOc3dbX4mchec5tdkSN'
         },
         'github': {
-            'id': '',
-            'secret': ''
+            'id': '1be4ae8a83efbb356ad8',
+            'secret': 'b8fe0ab54bea0640c9117accf57e34e01c3b1c32'
         }
     }
 

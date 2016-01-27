@@ -1,15 +1,13 @@
 from flask import url_for, session, current_app, redirect, request
-from .config import DevelopmentConfig as app_config
-from .app_setup import app, db_session, login_manager
+from . import app_config, app, db_session, login_manager
 from rauth import OAuth1Service, OAuth2Service
 import json
 import urllib2
 
-# Login based on Miguel Grinberg's article:
-# http://blog.miguelgrinberg.com/post/oauth-authentication-with-flask
-
 
 class OAuthSignIn(object):
+    # OAuth login is based on Miguel Grinberg's article:
+    # http://blog.miguelgrinberg.com/post/oauth-authentication-with-flask
     providers = None
 
     def __init__(self, provider_name):
@@ -59,7 +57,7 @@ class GoogleSignIn(OAuthSignIn):
 
     def callback(self):
         if 'code' not in request.args:
-            return None, None, None
+            return None, None
         oauth_session = self.service.get_auth_session(
                 data={'code': request.args['code'],
                       'grant_type': 'authorization_code',
@@ -92,7 +90,7 @@ class FacebookSignIn(OAuthSignIn):
 
     def callback(self):
         if 'code' not in request.args:
-            return None, None, None
+            return None, None
         oauth_session = self.service.get_auth_session(
             data={'code': request.args['code'],
                   'grant_type': 'authorization_code',
@@ -101,7 +99,7 @@ class FacebookSignIn(OAuthSignIn):
         me = oauth_session.get('me').json()
         email = me.get('email')
         if email is None:
-            username = "user_"+me['id']
+            username = "user_"+str(me['id'])
         else:
             username = email.split('@')[0]
         return (
@@ -135,7 +133,7 @@ class TwitterSignIn(OAuthSignIn):
     def callback(self):
         request_token = session.pop('request_token')
         if 'oauth_verifier' not in request.args:
-            return None, None, None
+            return None, None
         oauth_session = self.service.get_auth_session(
             request_token[0],
             request_token[1],
@@ -150,33 +148,32 @@ class TwitterSignIn(OAuthSignIn):
 class GitHubSignIn(OAuthSignIn):
     def __init__(self):
         super(GitHubSignIn, self).__init__('github')
-        self.service = OAuth1Service(
+        self.service = OAuth2Service(
             name='github',
-            consumer_key=self.consumer_id,
-            consumer_secret=self.consumer_secret,
-            request_token_url='https://api.twitter.com/oauth/request_token',
-            authorize_url='https://api.twitter.com/oauth/authorize',
-            access_token_url='https://api.twitter.com/oauth/access_token',
-            base_url='https://api.twitter.com/1.1/'
+            client_id=self.consumer_id,
+            client_secret=self.consumer_secret,
+            authorize_url='https://github.com/login/oauth/authorize',
+            access_token_url='https://github.com/login/oauth/access_token',
+            base_url='https://api.github.com/'
         )
 
-        def authorize(self):
-            return redirect(self.service.get_authorize_url(
-                scope='email',
-                response_type='code',
-                redirect_uri=self.get_callback_url())
-            )
+    def authorize(self):
+        return redirect(self.service.get_authorize_url(
+            scope='user',
+            response_type='code',
+            redirect_uri=self.get_callback_url())
+        )
 
-        def callback(self):
-            if 'code' not in request.args:
-                return None, None, None
-            oauth_session = self.service.get_auth_session(
-                data={'code': request.args['code'],
-                      'grant_type': 'authorization_code',
-                      'redirect_uri': self.get_callback_url()}
-            )
-            me = oauth_session.get('me').json()
-            return (
-                'github$' + me['id'],
-                'user_' + me['id']
-            )
+    def callback(self):
+        if 'code' not in request.args:
+            return None, None
+        oauth_session = self.service.get_auth_session(
+            data={'code': request.args['code'],
+                  'grant_type': 'authorization_code',
+                  'redirect_uri': self.get_callback_url()}
+        )
+        me = oauth_session.get('user').json()
+        return (
+            'github$' + str(me['id']),
+            me['login']
+        )

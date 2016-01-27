@@ -1,8 +1,63 @@
-from .. import app, db_session, OAuthSignIn, User, login_manager
+from .. import app, db_session, OAuthSignIn, \
+               User, login_manager, BaseForm, \
+               flash_errors
 from flask.ext.login import current_user, login_user, logout_user, \
                             login_required
 from flask import flash, redirect, url_for, render_template, request
 from passlib.hash import sha256_crypt
+from wtforms import StringField, PasswordField
+from wtforms.validators import DataRequired, Length, EqualTo
+
+
+class LoginForm(BaseForm):
+    nickname = StringField('Username',
+                           validators=[
+                            DataRequired(),
+                            Length(min=6, max=24,
+                                   message="Wrong username")
+                            ])
+    password = PasswordField('Password',
+                             validators=[
+                              DataRequired(),
+                              Length(min=6, max=24,
+                                     message="Wrong password")
+                              ])
+
+
+class RegisterForm(BaseForm):
+    nickname = StringField('Username',
+                           validators=[
+                            DataRequired(),
+                            Length(min=6, max=24,
+                                   message="Username must have between " +
+                                           " %(min)d and %(max)d characters")
+                            ])
+    password = PasswordField('Password',
+                             validators=[
+                              DataRequired(),
+                              Length(min=6, max=24,
+                                     message="Password must have between " +
+                                             "%(min)d and %(max)d characters"),
+                              EqualTo('confirm_password',
+                                      message="Passwords doesn't match")
+                              ])
+    confirm_password = PasswordField('Password confirmation')
+
+
+class ProfileForm(BaseForm):
+    # Current password can be None, when user registered thru oauth
+    password = PasswordField('Password')
+    new_password = \
+        PasswordField('New password',
+                      validators=[
+                       DataRequired(),
+                       Length(min=6, max=24,
+                              message="New password must have between " +
+                                      "%(min)d and %(max)d characters"),
+                       EqualTo('confirm_password',
+                               message="Passwords doesn't match")
+                      ])
+    confirm_password = PasswordField('Password confirmation')
 
 
 @login_manager.unauthorized_handler
@@ -18,90 +73,75 @@ def load_user(id):
 @app.route('/me', methods=['GET', 'POST'])
 @login_required
 def me():
-    if request.method == 'GET':
-        return render_template('profile.html')
     success = False
     user = current_user
-    pwd = request.form.get('current_password', '')
-    newpassword = request.form.get('new_password', '')
-    conpassword = request.form.get('confirm_password', '')
-    if user is None:
-        flash("Session expired")
-        return redirect(url_for('login'))
-    elif user.password != '' and not sha256_crypt.verify(pwd, user.password):
-        flash("Wrong password")
-    elif (user.password == '' or
-            (user.password != '' and
-             sha256_crypt.verify(pwd, user.password))):
-        if len(newpassword) < 6:
-            flash("Your new password must be longer than 6 characters")
-        elif newpassword != conpassword:
-            flash("Password confirmation doesn't match")
-        else:
+    # WTF Form to handle the submitted data
+    form = ProfileForm(request.form)
+    if request.method == 'POST' and form.validate():
+        userdata = User()
+        form.populate_obj(userdata)
+        if user is None:
+            flash("Session expired")
+            return redirect(url_for('login'))
+        elif sha256_crypt.verify(userdata.password, user.password):
             flash("Password changed successfully")
             success = True
-            user.password = sha256_crypt.encrypt(newpassword)
+            user.password = sha256_crypt.encrypt(userdata.new_password)
             db_session.add(user)
             db_session.commit()
-    else:
-        flash("Unknown error")
-    return render_template('profile.html', is_success=success)
+        else:
+            flash("Wrong password")
+    flash_errors(form)
+    return render_template('profile.html', form=form, is_success=success)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'GET':
-        if current_user.is_authenticated:
-            return redirect(url_for('index'))
-        return render_template('login.html')
-    # Process login
-    nickname = request.form.get('username', '')
-    password = request.form.get('password', '')
-    user = db_session.query(User).filter_by(nickname=nickname).first()
-    if user is None:
-        flash("User not found")
-        return render_template('login.html')
-    elif user.password == '':
-        flash("Your account has no password associated. If you registered ",
-              "with a social service, please login with it and set a password")
-        return render_template('login.html', usr=nickname)
-    elif sha256_crypt.verify(password, user.password):
-        login_user(user)
+    # Disallow this view to logged in users
+    if current_user.is_authenticated:
         return redirect(url_for('index'))
-    else:
-        flash("Wrong password")
-        return render_template('login.html', usr=nickname)
+    # WTF Form to handle the submitted data
+    form = LoginForm(request.form)
+    if request.method == 'POST' and form.validate():
+        userdata = User()
+        form.populate_obj(userdata)
+        user = db_session.query(User) \
+                         .filter_by(nickname=userdata.nickname) \
+                         .first()
+        if user is None:
+            flash("Wrong username")
+        elif sha256_crypt.verify(userdata.password, user.password):
+            login_user(user)
+            return redirect(url_for('index'))
+        else:
+            flash("Wrong password")
+    flash_errors(form)
+    return render_template('login.html', form=form)
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'GET':
-        if current_user.is_authenticated:
-            return redirect(url_for('index'))
-        return render_template('login.html', is_register=True)
-    # Process login
-    nickname = request.form.get('username', '')
-    password = request.form.get('password', '')
-    user = db_session.query(User).filter_by(nickname=nickname).first()
-    if user is not None:
-        flash("Username is already registered")
-        return render_template('login.html', is_register=True, usr=nickname)
-    elif len(nickname) < 6:
-        flash("Your username must be longer than 6 characters")
-        return render_template('login.html', is_register=True, usr=nickname)
-    elif len(password) < 6:
-        flash("Your password must be longer than 6 characters")
-        return render_template('login.html',
-                               is_register=True,
-                               usr=nickname,
-                               pwd=password)
-    else:
-        user = User(nickname=nickname)
-        user.password = sha256_crypt.encrypt(password)
-        db_session.add(user)
-        db_session.commit()
-        login_user(user)
+    # Disallow this view to logged in users
+    if current_user.is_authenticated:
         return redirect(url_for('index'))
+    # WTF Form to handle the submitted data
+    form = RegisterForm(request.form)
+    if request.method == 'POST' and form.validate():
+        userdata = User()
+        form.populate_obj(userdata)
+        user = db_session.query(User) \
+                         .filter_by(nickname=userdata.nickname) \
+                         .first()
+        if user is not None:
+            flash("Username is already registered")
+        else:
+            userdata.password = sha256_crypt.encrypt(userdata.password)
+            db_session.add(userdata)
+            db_session.commit()
+            login_user(userdata)
+            return redirect(url_for('index'))
+    flash_errors(form)
+    return render_template('login.html', is_register=True, form=form)
 
 
 @app.route('/logout')

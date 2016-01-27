@@ -1,0 +1,15 @@
+{% macro show_flashed_messages(is_success=False) -%}
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% if is_success %}
+            <div class="alert alert-success col-sm-12">
+        {% else %}
+            <div class="alert alert-danger col-sm-12">
+        {% endif %}
+        {% for message in messages %}
+            <div>{{message}}</div>
+        {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+{%- endmacro %}

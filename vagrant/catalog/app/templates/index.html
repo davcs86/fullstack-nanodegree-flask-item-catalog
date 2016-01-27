@@ -12,7 +12,9 @@
         <form action="{{url_for('index')}}" method="GET">
             <div class="col-xs-12">
                 <h3><i class="glyphicon glyphicon-briefcase"></i> Items
+                    {% if current_user.is_authenticated %}
                     <a href="{{url_for('item_new')}}" class="btn btn-info float-right"><i class="glyphicon glyphicon-plus-sign"></i> Create item</a>
+                    {% endif %}
                 </h3>
                 <hr>
             </div>

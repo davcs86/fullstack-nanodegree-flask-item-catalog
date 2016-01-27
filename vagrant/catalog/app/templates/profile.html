@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import 'macros.html' as macros %}
 
 {% block head %}
 <title>My profile</title>
@@ -12,35 +13,26 @@
                 <div class="panel-title">My profile</div>
             </div>
             <div style="padding-top:30px" class="panel-body" >
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% if is_success %}
-                        <div class="alert alert-success col-sm-12">
-                    {% else %}
-                        <div class="alert alert-danger col-sm-12">
-                    {% endif %}
-                    {% for message in messages %}
-                        <div>{{message}}</div>
-                    {% endfor %}
-                    </div>
-                    {% endif %}
-                {% endwith %}
+                {{ macros.show_flashed_messages(is_success) }}
                 <form action="{{url_for('me')}}" method="POST" class="form-horizontal" role="form">
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                    {{ form.hidden_tag() }}
                     <div style="margin-bottom: 25px" class="input-group">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                        <input type="text" class="form-control" disabled="disabled" name="username" value="{{ current_user.nickname|e }}" placeholder="Username">
+
+                        <input type="text" class="form-control" disabled="disabled" value="{{ current_user.nickname|e }}" placeholder="Username">
                     </div>
                     <div style="margin-bottom: 25px" class="input-group">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                        <input type="password" class="form-control" name="current_password" value="" placeholder="Current password">
+                        {{ form.password(class='form-control',placeholder="Current password") }}
                     </div>
                     <div style="margin-bottom: 25px" class="input-group">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                        <input type="password" class="form-control" name="new_password" value="" placeholder="New password">
+                        {{ form.new_password(class='form-control',placeholder="New password") }}
                     </div>
                     <div style="margin-bottom: 25px" class="input-group">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                        <input type="password" class="form-control" name="confirm_password" value="" placeholder="Confirm new password">
+                        {{ form.confirm_password(class='form-control',placeholder="Confirm new password") }}
                     </div>
                     <div style="margin-top:10px" class="form-group">
                         <!-- Button -->
