@@ -3,8 +3,7 @@ apt-get -qqy install postgresql python-psycopg2
 apt-get -qqy install python-flask python-sqlalchemy
 apt-get -qqy install python-pip
 apt-get -qqy install python-dev
-apt-get -qqy install libmagickwand-dev
-apt-get -qqy install npm git nodejs-legacy
+apt-get -qqy install libmagickwand-dev npm git nodejs-legacy
 pip install bleach
 pip install oauth2client
 pip install requests
@@ -18,7 +17,6 @@ pip install rauth
 pip install flask-seasurf
 pip install flask-wtf
 pip install awesome-slugify
-pip install Flask-Uploads
 pip install SQLAlchemy-ImageAttach
 
 su postgres -c 'createuser -dRS vagrant'

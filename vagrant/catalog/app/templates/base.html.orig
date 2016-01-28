@@ -1,0 +1,135 @@
+<<<<<<< HEAD
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Item catalog">
+        <meta name="author" content="David Castillo <davcs86@gmail.com>">
+
+        <!-- Bootstrap core CSS -->
+        <link href="{{ url_for('static', filename='bower_components/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet"></link>
+        <link href="{{ url_for('static', filename='bower_components/bootstrap-social/bootstrap-social.css') }}" rel="stylesheet"></link>
+        <link href="{{ url_for('static', filename='bower_components/font-awesome/css/font-awesome.css') }}" rel="stylesheet"></link>
+        <link href="{{ url_for('static', filename='bower_components/select2/dist/css/select2.min.css') }}" rel="stylesheet"></link>
+        <link href="{{ url_for('static', filename='bower_components/select2-bootstrap-css/select2-bootstrap.min.css') }}" rel="stylesheet"></link>
+        <link href="{{ url_for('static', filename='bower_components/bootstrap-fileinput/css/fileinput.min.css') }}" rel="stylesheet"></link>
+
+        <script src="{{ url_for('static', filename='bower_components/jquery/dist/jquery.js') }}"></script>
+        <script src="{{ url_for('static', filename='bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='bower_components/select2/dist/js/select2.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='bower_components/bootstrap-fileinput/js/fileinput.min.js') }}"></script>
+
+        <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet"></link>
+        <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+        {% block head %}
+        {% endblock %}
+    </head>
+    <body>
+        <!-- Header -->
+        <div id="top-nav" class="navbar navbar-inverse navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-toggle"></span>
+                    </button>
+                    <a class="navbar-brand" href="{{ url_for('index') }}">Item catalog by @davcs86</a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if current_user.is_authenticated %}
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" role="button" data-toggle="dropdown" href="#">
+                            <i class="glyphicon glyphicon-user"></i> {{current_user.nickname}} <span class="caret"></span></a>
+                            <ul id="g-account-menu" class="dropdown-menu" role="menu">
+                                <li><a href="{{url_for('me')}}">My Profile</a></li>
+                                <li><a href="{{url_for('logout')}}"><i class="glyphicon glyphicon-lock"></i> Logout</a></li>
+                            </ul>
+                        </li>
+                        {% else %}
+                        <li {% if 'login' == active_page %} class="active"{% endif%}>
+                            <a href="{{url_for('login')}}">Sign in</a>
+                        </li>
+                        <li {% if 'register' == active_page %} class="active"{% endif%}>
+                            <a href="{{url_for('register')}}">Register</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div><!-- /container -->
+        </div>
+        <!-- /Header -->
+        {% block body %}
+        {% endblock %}
+    </body>
+</html>
+=======
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Item catalog">
+        <meta name="author" content="David Castillo <davcs86@gmail.com>">
+
+        <!-- Bootstrap core CSS -->
+        <link href="{{ url_for('static', filename='bower_components/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet"></link>
+        <link href="{{ url_for('static', filename='bower_components/bootstrap-social/bootstrap-social.css') }}" rel="stylesheet"></link>
+        <link href="{{ url_for('static', filename='bower_components/font-awesome/css/font-awesome.css') }}" rel="stylesheet"></link>
+        <link href="{{ url_for('static', filename='bower_components/select2/dist/css/select2.min.css') }}" rel="stylesheet"></link>
+        <link href="{{ url_for('static', filename='bower_components/select2-bootstrap-css/select2-bootstrap.min.css') }}" rel="stylesheet"></link>
+        <link href="{{ url_for('static', filename='bower_components/bootstrap-fileinput/css/fileinput.min.css') }}" rel="stylesheet"></link>
+
+        <script src="{{ url_for('static', filename='bower_components/jquery/dist/jquery.js') }}"></script>
+        <script src="{{ url_for('static', filename='bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='bower_components/select2/dist/js/select2.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='bower_components/bootstrap-fileinput/js/fileinput.min.js') }}"></script>
+
+        <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet"></link>
+        <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+        {% block head %}
+        {% endblock %}
+    </head>
+    <body>
+        <!-- Header -->
+        <div id="top-nav" class="navbar navbar-inverse navbar-static-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-toggle"></span>
+                    </button>
+                    <a class="navbar-brand" href="{{ url_for('index') }}">Item catalog by @davcs86</a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if current_user.is_authenticated %}
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" role="button" data-toggle="dropdown" href="#">
+                            <i class="glyphicon glyphicon-user"></i> {{current_user.nickname}} <span class="caret"></span></a>
+                            <ul id="g-account-menu" class="dropdown-menu" role="menu">
+                                <li><a href="{{url_for('me')}}">My Profile</a></li>
+                                <li><a href="{{url_for('logout')}}"><i class="glyphicon glyphicon-lock"></i> Logout</a></li>
+                            </ul>
+                        </li>
+                        {% else %}
+                        <li {% if 'login' == active_page %} class="active"{% endif%}>
+                            <a href="{{url_for('login')}}">Sign in</a>
+                        </li>
+                        <li {% if 'register' == active_page %} class="active"{% endif%}>
+                            <a href="{{url_for('register')}}">Register</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div><!-- /container -->
+        </div>
+        <!-- /Header -->
+        {% block body %}
+        {% endblock %}
+    </body>
+</html>
+>>>>>>> origin/master
