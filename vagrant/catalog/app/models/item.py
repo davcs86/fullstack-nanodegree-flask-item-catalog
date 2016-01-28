@@ -4,6 +4,15 @@ from sqlalchemy.orm import relationship
 from .base import Base
 from .category import Category
 from .user import User
+from sqlalchemy_imageattach.entity import Image, image_attachment
+
+
+class ItemPicture(Image, Base):
+    """Item picture model."""
+    __tablename__ = 'item_picture'
+    item_id = Column(Integer, ForeignKey('item.id'), primary_key=True)
+    item = relationship('Item')
+    __tablename__ = 'item_picture'
 
 
 class ItemCategory(Base):
@@ -27,6 +36,7 @@ class Item(Base):
         'Category',
         secondary='item_category'
     )
+    picture = image_attachment('ItemPicture')
 
     @property
     def serialize(self):

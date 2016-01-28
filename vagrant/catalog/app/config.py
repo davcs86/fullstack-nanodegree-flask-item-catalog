@@ -1,11 +1,16 @@
+import tempfile
+
+
 class Config(object):
     HOST = '0.0.0.0'
     PORT = 80
     DEBUG = False
     DEVELOPMENT = False
-    CSRF_ENABLED = True
+    WTF_CSRF_ENABLED = False
     CSRF_COOKIE_NAME = '_csrf_token'
     SECRET_KEY = 'UNbPflgB8ZNQPwdY9m5owtstQwGIKIJXXfjuJeFwIYl6Mz3UqNT6VwPKBQW9'
+    UPLOAD_FOLDER = tempfile.tempdir
+    ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
     SQLALCHEMY_DATABASE_URI = "postgresql://vagrant:vagrant@localhost/catalog"
     OAUTH_CREDENTIALS = {
         'google': {

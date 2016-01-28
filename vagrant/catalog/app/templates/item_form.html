@@ -23,12 +23,14 @@
             <div style="padding-top:30px" class="panel-body" >
                 {{ macros.show_flashed_messages(is_success) }}
                 {% if is_edit == True %}
-                    <form action="{{url_for('item_edit')}}" method="POST" class="form-horizontal" enctype="multipart/form-data" role="form">
+                    <form action="{{url_for('item_edit', item_id=item_id )}}" method="POST" class="form-horizontal" enctype="multipart/form-data" role="form">
                 {% else %}
                     <form action="{{url_for('item_new')}}" method="POST" class="form-horizontal" enctype="multipart/form-data" role="form">
                 {% endif %}
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                    {{ form.hidden_tag() }}
+                    {% if form.picture_status %}
+                        {{ form.picture_status(id='picture_status') }}
+                    {% endif %}
                     <div style="margin-bottom: 10px" class="input-group">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
                         {{ form.name(class='form-control', placeholder="Title") }}
@@ -42,8 +44,8 @@
                     </div>
                     <div style="padding: 15px 15px 0; margin-bottom: 0px" class="form-group">
                         <div class="image-preview">
-                            <label class="image-label">Choose File</label>
-                            {{ form.photo(class='image-upload') }}
+                            <label class="image-label">Item picture</label>
+                            {{ form.picture(id='item-picture') }}
                         </div>
                     </div>
                     <div style="margin-top:10px" class="form-group">
@@ -62,4 +64,13 @@
         </div>
     </div>
  </div>
+ <script>
+    jQuery(function($){
+        {% if item_image_url %}
+            window.createPreviews("{{ item_image_url }}");
+        {% else %}
+            window.createPreviews();
+        {% endif %}
+    });
+ </script>
 {% endblock %}
