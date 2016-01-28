@@ -1,15 +1,17 @@
 from .. import app, db_session, OAuthSignIn, \
                Item, Category, login_manager, BaseForm, \
                flash_errors, OpenSelectMultipleField, \
-               slugify_category_list
+               slugify_category_list, fs_store
 from flask.ext.login import current_user, login_user, login_required
 from flask import flash, redirect, url_for, render_template, request
-from wtforms import StringField, PasswordField, TextAreaField
-from wtforms.validators import DataRequired, Length, EqualTo
-from flask_wtf.file import FileField, FileAllowed, FileRequired
-from flask.ext.uploads import UploadSet, IMAGES
+from wtforms import StringField, PasswordField, TextAreaField, HiddenField
+from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
+from flask_wtf.file import FileField
 
-allowed_uploads = UploadSet('images', IMAGES)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
 
 
 @app.route('/')
@@ -45,10 +47,46 @@ class AddItemForm(BaseForm):
                                          )
                                  ])
     categories = OpenSelectMultipleField('Categories')
-    photo = FileField('Item photo', validators=[
-        FileRequired(),
-        FileAllowed(allowed_uploads, 'Only can be an image')
-    ])
+    picture = FileField('Item picture')
+
+    def validate_picture(form, field):
+        if field.name in request.files:
+            field.data = request.files[field.name]
+            if not allowed_file(field.data.filename):
+                raise ValidationError('Item picture must be an image')
+        else:
+            field.data = None
+
+
+class EditItemForm(BaseForm):
+    name = StringField('Title',
+                       validators=[
+                            DataRequired(),
+                            Length(min=6, max=100,
+                                   message="Title must have between " +
+                                           "%(min)d and %(max)d characters")
+                            ])
+    description = TextAreaField('Description',
+                                validators=[
+                                  DataRequired(),
+                                  Length(max=1000,
+                                         message="Description must have 1000" +
+                                                 " characters max"
+                                         )
+                                 ])
+    categories = OpenSelectMultipleField('Categories')
+    picture = FileField('Item picture')
+    # 0 = unmodified; 1 = replaced; 2 = deleted
+    picture_status = HiddenField('picture_status')
+
+    def validate_picture(form, field):
+        if form.picture_status.data == 1:  # validate only if it was modified
+            if field.name in request.files:
+                field.data = request.files[field.name]
+                if not allowed_file(field.data.filename):
+                    raise ValidationError('Item picture must be an image')
+        else:
+            field.data = None
 
 
 @app.route('/newitem', methods=['GET', 'POST'])
@@ -60,7 +98,7 @@ def item_new():
     form.categories.choices = [(str(g.id)+'|'+g.name, g.name) for g
                                in db_session.query(Category).order_by('name')]
     if request.method == 'POST':
-        categories_selected = slugify_category_list(form.data['categories'])
+        categories_selected = slugify_category_list(form.categories.data)
         form.categories.choices += [(x[0], x[2]) for x in
                                     categories_selected
                                     if (x[0], x[2]) not in
@@ -69,7 +107,8 @@ def item_new():
             if len(categories_selected) > 0:
                 # Save the new item and the categories selected
                 item = Item()
-                form.populate_obj(item)
+                item.name = form.name.data
+                item.description = form.description.data
                 categories_list = []
                 item.categories = categories_list
                 for cat_key, cat_id, cat_slug in categories_selected:
@@ -87,16 +126,94 @@ def item_new():
                     categories_list.append(item_category)
                 item.categories = categories_list
                 item.author = current_user
+                if form.picture.data is not None:
+                    item.picture.from_blob(
+                        form.picture.data.read(), store=fs_store)
                 db_session.add(item)
                 db_session.commit()
                 success = True
                 flash("Item was created successfully")
-                # Clear the form
+                # Clear the form, reset the categories
                 form = AddItemForm(formdata=None)
-                form.categories.choices = [(g.name, g.name) for g
-                                           in db_session.query(Category)
-                                                        .order_by('name')]
+                form.categories \
+                    .choices = [(str(g.id)+'|'+g.name, g.name) for g
+                                in db_session.query(Category).order_by('name')]
             else:
                 flash("The item must have at least one category")
     flash_errors(form)
     return render_template('item_form.html', form=form, is_success=success)
+
+
+@app.route('/edititem/<int:item_id>', methods=['GET', 'POST'])
+@login_required
+def item_edit(item_id):
+    success = False
+    # verify if the item exists and if current_user is its author
+    item = db_session.query(Item) \
+                     .filter(Item.id == item_id and
+                             Item.author_id == current_user.id).first()
+    if item is None:
+        flash("You can only modify your own items")
+        return redirect(url_for('index'))
+    # WTF Form to handle the submitted data
+    form = EditItemForm(request.form, item)
+    form.categories.choices = [(str(g.id)+'|'+g.name, g.name) for g
+                               in db_session.query(Category).order_by('name')]
+    if request.method == 'GET':
+        form.picture_status.data = 0
+        form.categories.data = [str(g.id)+'|'+g.name for g in item.categories]
+    elif request.method == 'POST':
+        categories_selected = slugify_category_list(form.categories.data)
+        form.categories.choices += [(x[0], x[2]) for x in
+                                    categories_selected
+                                    if (x[0], x[2]) not in
+                                    form.categories.choices]
+        if form.validate():
+            if len(categories_selected) > 0:
+                # Save the new item and the categories selected
+                # item = Item()
+                item.name = form.name.data
+                item.description = form.description.data
+                categories_list = []
+                item.categories = categories_list
+                for cat_key, cat_id, cat_slug in categories_selected:
+                    if cat_id == 0:
+                        # New category, create it
+                        item_category = Category(name=cat_slug)
+                    else:
+                        # Find the category by the id
+                        item_category = db_session \
+                                        .query(Category) \
+                                        .filter_by(id=cat_id).first()
+                        if item_category is None:
+                            # If it wasn't in the database, create it
+                            item_category = Category(name=cat_slug)
+                    categories_list.append(item_category)
+                item.categories = categories_list
+                # item.author = current_user
+                if form.picture_status.data == 2:
+                    item.picture = None
+                elif form.picture_status.data == 1:
+                    if form.picture.data is not None:
+                        item.picture.from_blob(
+                            form.picture.data.read(), store=fs_store)
+                db_session.merge(item)
+                db_session.commit()
+                success = True
+                flash("Item was modified successfully")
+                # reset the form
+                form = EditItemForm(request.form, item)
+                form.categories \
+                    .choices = [(str(g.id)+'|'+g.name, g.name) for g
+                                in db_session.query(Category).order_by('name')]
+                form.picture_status.data = 0
+                form.categories.data = [str(g.id)+'|'+g.name for g
+                                        in item.categories]
+            else:
+                flash("The item must have at least one category")
+    flash_errors(form)
+    # retrieve the current item image
+    item_image_url = item.picture.locate(fs_store)
+    return render_template('item_form.html', item_image_url=item_image_url,
+                           form=form, is_success=success, is_edit=True,
+                           item_id=item.id)

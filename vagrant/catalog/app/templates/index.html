@@ -10,6 +10,7 @@
     <!-- upper section -->
     <div class="row">
         <form action="{{url_for('index')}}" method="GET">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
             <div class="col-xs-12">
                 <h3><i class="glyphicon glyphicon-briefcase"></i> Items
                     {% if current_user.is_authenticated %}
