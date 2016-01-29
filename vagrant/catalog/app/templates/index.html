@@ -23,16 +23,16 @@
             </div>
             <div class="clearfix"></div>
             <div class="col-sm-5 search-panel-box">
-                <input type="text" class="form-control" name="query" placeholder="Search items...">
+                {{ form.query(class='form-control', placeholder="Search items...") }}
             </div>
             <div class="col-sm-5 search-panel-box">
                 <div class="select2-wrapper">
                     <div class="form-group no-margin">
                         <div class="input-group input-group-sm select2-bootstrap-prepend">
                             <span class="input-group-addon">
-                                <input type="checkbox" name="filterbycat" id="filterby"> Filter by category
+                                {{ form.filterbycat(id='filterby') }} Filter by category
                             </span>
-                            {{ form.categories(id='select2-filterby',class='form-control select2',multiple='multiple',disabled='disabled') }}
+                            {{ form.categories(id='select2-filterby',class='form-control select2',disabled='disabled') }}
                         </div>
                     </div>
                 </div>
