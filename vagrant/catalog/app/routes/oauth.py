@@ -1,6 +1,4 @@
-from .. import app, db_session, OAuthSignIn, User
-from flask.ext.login import current_user, login_user, login_required
-from flask import flash, redirect, url_for
+from .. import *
 from passlib.hash import sha256_crypt
 
 

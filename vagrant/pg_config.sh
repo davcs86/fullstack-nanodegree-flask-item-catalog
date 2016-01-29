@@ -15,6 +15,7 @@ pip install flask-httpauth
 pip install flask-login
 pip install rauth
 pip install flask-seasurf
+pip install flask-sqlalchemy
 pip install wtforms
 pip install awesome-slugify
 pip install SQLAlchemy-ImageAttach

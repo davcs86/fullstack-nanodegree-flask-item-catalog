@@ -11,8 +11,8 @@
     <!-- upper section -->
     <div class="row">
         {{ macros.show_flashed_messages(is_success) }}
-        <form action="{{url_for('index')}}" method="POST">
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <form action="{{url_for('index')}}" method="GET">
+            {{ form.page(id='page_field',class='hidden') }}
             <div class="col-xs-12">
                 <h3><i class="glyphicon glyphicon-briefcase"></i> Items
                     {% if current_user.is_authenticated %}
@@ -42,8 +42,42 @@
             </div>
         </form>
         <!-- left -->
-        {{items|length}}
     </div>
+    {{ macros.render_pagination(pagination) }}
+    <div class="row">
+        <div class="col-xs-12">
+            {% for item in items %}
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <h3 class="list-group-item-heading">{{ item.name|e }}</h3>
+                        <p class="list-group-item-text">Author: {{ current_user.nickname }}</p>
+                        <p class="list-group-item-text">Last update: </p>
+                        <p class="list-group-item-text">Categories:
+                            {% for cat in item.categories.all() %}
+                                <span class="badge">{{ cat.name }}</span>&nbsp;
+                            {% endfor %}
+                        </p>
+                        <div class="panel-box">
+                            <div class="btn-group">
+                                <a href="#" class="btn btn-sm btn-success col-sm-5">
+                                    <i class="glyphicon glyphicon-new-window"></i> Open item
+                                </a>
+                                {% if item.author == current_user %}
+                                <a href="#" class="btn btn-sm btn-info col-sm-3">
+                                    <i class="glyphicon glyphicon-edit"></i> Edit
+                                </a>
+                                <a href="#" class="btn btn-sm btn-danger col-sm-4">
+                                    <i class="glyphicon glyphicon-remove"></i> Delete
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {{ macros.render_pagination(pagination) }}
       <div class="row">
       <div class="col-sm-3">
       <ul class="nav nav-stacked">

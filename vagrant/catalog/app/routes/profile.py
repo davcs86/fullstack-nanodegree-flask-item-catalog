@@ -1,12 +1,5 @@
-from .. import app, db_session, OAuthSignIn, \
-               User, login_manager, BaseForm, \
-               flash_errors
-from flask.ext.login import current_user, login_user, logout_user, \
-                            login_required
-from flask import flash, redirect, url_for, render_template, request
+from .. import *
 from passlib.hash import sha256_crypt
-from wtforms import StringField, PasswordField
-from wtforms.validators import DataRequired, Length, EqualTo
 
 
 class LoginForm(BaseForm):

@@ -1,5 +1,4 @@
-from flask import url_for, session, current_app, redirect, request
-from . import app_config, app, db_session, login_manager
+from . import *
 from rauth import OAuth1Service, OAuth2Service
 import json
 import urllib2

@@ -9,6 +9,9 @@
 .search-panel-box {
     padding: 6px 15px;
 }
+.panel-box {
+    padding: 6px 0;
+}
 
 .no-margin {
     margin: 0;

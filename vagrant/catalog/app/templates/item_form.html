@@ -29,7 +29,7 @@
                 {% endif %}
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                     {% if form.picture_status %}
-                        {{ form.picture_status(id='picture_status') }}
+                        {{ form.picture_status(id='picture_status',class='hidden') }}
                     {% endif %}
                     <div style="margin-bottom: 10px" class="input-group">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>

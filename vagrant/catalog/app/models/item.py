@@ -1,7 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Integer, \
-                       String, UniqueConstraint, PrimaryKeyConstraint
-from sqlalchemy.orm import relationship
-from .base import Base
+from .base import *
 from .category import Category
 from .user import User
 from sqlalchemy_imageattach.entity import Image, image_attachment
@@ -34,7 +31,9 @@ class Item(Base):
     author = relationship(User)
     categories = relationship(
         'Category',
-        secondary='item_category'
+        secondary='item_category',
+        backref='items',
+        lazy='dynamic'
     )
     picture = image_attachment('ItemPicture')
 

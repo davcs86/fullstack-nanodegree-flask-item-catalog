@@ -1,6 +1,5 @@
-from sqlalchemy import Column, Integer, String, UniqueConstraint
 from flask.ext.login import UserMixin
-from .base import Base
+from .base import *
 
 
 class User(UserMixin, Base):

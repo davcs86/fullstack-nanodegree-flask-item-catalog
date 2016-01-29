@@ -1,12 +1,4 @@
-from .. import app, db_session, OAuthSignIn, \
-               Item, Category, login_manager, BaseForm, \
-               flash_errors, OpenSelectMultipleField, \
-               slugify_category_list
-from flask.ext.login import current_user, login_user, login_required
-from flask import flash, redirect, url_for, render_template, request
-from wtforms import StringField, PasswordField, TextAreaField, \
-                    FileField, HiddenField
-from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
+from .. import *
 
 
 def allowed_file(filename):
@@ -61,7 +53,7 @@ class EditItemForm(BaseForm):
     categories = OpenSelectMultipleField('Categories')
     picture = FileField('Item picture')
     # 0 = unmodified; 1 = replaced; 2 = deleted
-    picture_status = HiddenField('picture_status')
+    picture_status = IntegerField('picture_status')
 
     def validate_picture(form, field):
         if form.picture_status.data == '1':  # validate only if it was modified
