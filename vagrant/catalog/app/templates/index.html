@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% import 'macros.html' as macros %}
 
 {% block head %}
 <title>Welcome</title>
@@ -9,7 +10,8 @@
 <div class="container">
     <!-- upper section -->
     <div class="row">
-        <form action="{{url_for('index')}}" method="GET">
+        {{ macros.show_flashed_messages(is_success) }}
+        <form action="{{url_for('index')}}" method="POST">
             <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
             <div class="col-xs-12">
                 <h3><i class="glyphicon glyphicon-briefcase"></i> Items
@@ -19,32 +21,23 @@
                 </h3>
                 <hr>
             </div>
-            <div class="col-sm-5">
+            <div class="clearfix"></div>
+            <div class="col-sm-5 search-panel-box">
                 <input type="text" class="form-control" name="query" placeholder="Search items...">
             </div>
-            <div class="col-sm-5">
+            <div class="col-sm-5 search-panel-box">
                 <div class="select2-wrapper">
-                    <div class="form-group">
+                    <div class="form-group no-margin">
                         <div class="input-group input-group-sm select2-bootstrap-prepend">
                             <span class="input-group-addon">
                                 <input type="checkbox" name="filterbycat" id="filterby"> Filter by category
                             </span>
-                            <select id="select2-filterby" name="categories[]" class="form-control select2"  multiple="multiple" disabled>
-                                <option value="AL">Alabama</option>
-                                <option value="AR">Arkansas</option>
-                                <option value="IL">Illinois</option>
-                                <option value="IA">Iowa</option>
-                                <option value="KS">Kansas</option>
-                                <option value="KY">Kentucky</option>
-                                <option value="LA">Louisiana</option>
-                                <option value="MN">Minnesota</option>
-                                <option value="MS">Mississippi</option>
-                            </select>
+                            {{ form.categories(id='select2-filterby',class='form-control select2',multiple='multiple',disabled='disabled') }}
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-2 search-panel-box">
                 <button class="btn btn-block btn-success">Search</button>
             </div>
         </form>

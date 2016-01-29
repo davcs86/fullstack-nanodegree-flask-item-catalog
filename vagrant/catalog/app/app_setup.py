@@ -9,6 +9,8 @@ from models.category import Category
 from models.user import User
 from models.item import Item
 from sqlalchemy_imageattach.stores.fs import HttpExposedFileSystemStore
+from sqlalchemy_imageattach.context import (pop_store_context,
+                                            push_store_context)
 
 app = Flask(__name__)
 app.config.from_object(app_config)
@@ -26,3 +28,16 @@ db_session = DBSession()
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+# Set the storage context for the images
+# http://sqlalchemy-imageattach.readthedocs.org/en/0.9.0/guide/context.html#implicit-contexts
+
+
+@app.before_request
+def start_implicit_store_context():
+    push_store_context(fs_store)
+
+
+@app.teardown_request
+def stop_implicit_store_context(exception=None):
+    pop_store_context()

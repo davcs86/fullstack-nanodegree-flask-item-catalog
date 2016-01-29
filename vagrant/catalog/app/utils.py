@@ -35,13 +35,3 @@ class OpenSelectMultipleField(SelectMultipleField):
     # Taken from http://stackoverflow.com/a/31282492/2423859
     def pre_validate(self, form):
         pass
-
-    # def process_formdata(self, valuelist):
-    #     # slugify the categories from the form
-    #     slugifier = Slugify(to_lower=True)
-    #     try:
-    #
-    #         self.data = list(slugifier(self.coerce(x)) for x in valuelist)
-    #     except ValueError:
-    #         raise ValueError(self.gettext('Invalid choice(s): one or more ' +
-    #                                     ' data inputs could not be coerced'))

@@ -1,5 +1,4 @@
 from .. import app, db_session, OAuthSignIn, User
-from sqlalchemy import or_
 from flask.ext.login import current_user, login_user, login_required
 from flask import flash, redirect, url_for
 from passlib.hash import sha256_crypt

@@ -1,13 +1,20 @@
 jQuery(function($){
     // Index functions
+    var cachedValues;
     $('#select2-filterby').select2({
-        placeholder: 'Select a category',
-        maximumSelectionSize: 6
+        placeholder: 'Select any category',
+        maximumSelectionSize: 6,
+        width: '100%'
     });
     $('#filterby').on('click', function() {
-        $( this ).parent()
-            .nextAll('select')
-            .select2('enable', this.checked);
+        $('#select2-filterby').select2('enable', this.checked);
+        if (!this.checked) {
+            cachedValues = $('#select2-filterby').val();
+            $('#select2-filterby').val('').change();
+        } else {
+            // restore the values
+            $('#select2-filterby').val(cachedValues).change();
+        }
     });
     // Create item functions
     window.tagSelSettings = {

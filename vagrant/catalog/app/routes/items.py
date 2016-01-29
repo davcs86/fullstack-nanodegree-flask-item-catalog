@@ -1,33 +1,17 @@
 from .. import app, db_session, OAuthSignIn, \
                Item, Category, login_manager, BaseForm, \
                flash_errors, OpenSelectMultipleField, \
-               slugify_category_list, fs_store
+               slugify_category_list
 from flask.ext.login import current_user, login_user, login_required
 from flask import flash, redirect, url_for, render_template, request
-from wtforms import StringField, PasswordField, TextAreaField, HiddenField
+from wtforms import StringField, PasswordField, TextAreaField, \
+                    FileField, HiddenField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
-from flask_wtf.file import FileField
 
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
-
-
-@app.route('/')
-@app.route('/index')
-def index():
-    page = request.form.get('page', 1)
-    filter_query = request.form.get('query', False)
-    filter_filterbycat = 'filterbycat' in request.form
-    filter_categories = request.form.getlist('categories[]')
-    items = db_session.query(Item).all()[(page-1)*10::10]
-    if filter_query is not False:
-        items = db_session.query(Item) \
-            .filter((Item.name.ilike(filter_query)) |
-                    (Item.description.ilike(filter_query))) \
-            .all()[(page-1)*10::10]
-    return render_template('index.html', items=items)
 
 
 class AddItemForm(BaseForm):
@@ -73,14 +57,6 @@ class EditItemForm(BaseForm):
                                          message="Description must have 1000" +
                                                  " characters max"
                                          )
-                            ])
-    description = TextAreaField('Description',
-                                validators=[
-                                  DataRequired(),
-                                  Length(max=1000,
-                                         message="Description must have 1000" +
-                                                 " characters max"
-                                         )
                                  ])
     categories = OpenSelectMultipleField('Categories')
     picture = FileField('Item picture')
@@ -88,8 +64,9 @@ class EditItemForm(BaseForm):
     picture_status = HiddenField('picture_status')
 
     def validate_picture(form, field):
-        if form.picture_status.data == 1:  # validate only if it was modified
+        if form.picture_status.data == '1':  # validate only if it was modified
             if field.name in request.files:
+                # store the file
                 field.data = request.files[field.name]
                 if not allowed_file(field.data.filename):
                     raise ValidationError('Item picture must be an image')
@@ -136,7 +113,7 @@ def item_new():
                 item.author = current_user
                 if form.picture.data is not None:
                     item.picture.from_blob(
-                        form.picture.data.read(), store=fs_store)
+                        form.picture.data.read())
                 db_session.add(item)
                 db_session.commit()
                 success = True
@@ -198,16 +175,16 @@ def item_edit(item_id):
                             item_category = Category(name=cat_slug)
                     categories_list.append(item_category)
                 item.categories = categories_list
-                print item.picture
                 if form.picture_status.data == '2' \
                    or form.picture_status.data == '1':
                     # delete the current image
-                    fs_store.delete(item.picture._mapper_adapter_map)
-                    # db_session.commit()
+                    current_image = item.picture.first()
+                    if current_image is not None:
+                        item.picture.remove(current_image)
                 if form.picture_status.data == '1':
                     if form.picture.data is not None:
                         item.picture.from_blob(
-                            form.picture.data.read(), store=fs_store)
+                            form.picture.data.read())
                 db_session.merge(item)
                 db_session.commit()
                 success = True
@@ -224,7 +201,10 @@ def item_edit(item_id):
                 flash("The item must have at least one category")
     flash_errors(form)
     # retrieve the current item image
-    item_image_url = item.picture.locate(fs_store)
+    item_image_url = False
+    current_image = item.picture.first()
+    if current_image is not None:
+        item_image_url = item.picture.locate()
     return render_template('item_form.html', item_image_url=item_image_url,
                            form=form, is_success=success, is_edit=True,
                            item_id=item.id)
