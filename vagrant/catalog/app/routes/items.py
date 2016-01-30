@@ -66,7 +66,7 @@ class EditItemForm(BaseForm):
             field.data = None
 
 
-@app.route('/newitem', methods=['GET', 'POST'])
+@app.route('/item/new', methods=['GET', 'POST'])
 @login_required
 def item_new():
     success = False
@@ -121,7 +121,7 @@ def item_new():
     return render_template('item_form.html', form=form, is_success=success)
 
 
-@app.route('/edititem/<int:item_id>', methods=['GET', 'POST'])
+@app.route('/item/edit/<int:item_id>', methods=['GET', 'POST'])
 @login_required
 def item_edit(item_id):
     success = False
@@ -147,8 +147,6 @@ def item_edit(item_id):
                                     form.categories.choices]
         if form.validate():
             if len(categories_selected) > 0:
-                # Save the new item and the categories selected
-                # item = Item()
                 item.name = form.name.data
                 item.description = form.description.data
                 categories_list = []
@@ -200,3 +198,13 @@ def item_edit(item_id):
     return render_template('item_form.html', item_image_url=item_image_url,
                            form=form, is_success=success, is_edit=True,
                            item_id=item.id)
+
+
+@app.route('/item/detail/<int:item_id>', methods=['GET', 'POST'])
+def item_detail(item_id):
+    item = db_session.query(Item) \
+                     .filter(Item.id == item_id).first()
+    if item is None:
+        flash('Item does not exist')
+        return redirect(url_for('index'))
+    return render_template('item_detail.html', item=item)

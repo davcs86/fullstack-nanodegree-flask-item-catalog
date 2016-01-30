@@ -1,6 +1,8 @@
 from flask import flash
 from wtforms import SelectMultipleField
 from slugify import Slugify
+from dateutil.parser import parser
+from .app_setup import app
 # Misc utils methods
 
 
@@ -25,6 +27,15 @@ def slugify_category_list(category_list):
                 cat_elem.append(cat_elem[0])
             slugified_list.append([cat, cat_elem[0], slugifier(cat_elem[1])])
         return slugified_list
+
+
+@app.template_filter('strftime')
+def _jinja2_filter_datetime(date, fmt=None):
+    Parser = parser()
+    date = Parser.parse(date)
+    native = date.replace(tzinfo=None)
+    format = '%b %d, %Y'
+    return native.strftime(format)
 
 
 class OpenSelectMultipleField(SelectMultipleField):

@@ -50,8 +50,8 @@
                 <div class="list-group">
                     <div class="list-group-item">
                         <h3 class="list-group-item-heading">{{ item.name|e }}</h3>
-                        <p class="list-group-item-text">Author: {{ current_user.nickname }}</p>
-                        <p class="list-group-item-text">Last update: </p>
+                        <p class="list-group-item-text">Author: <em>{{ current_user.nickname }}</em></p>
+                        <p class="list-group-item-text">Created at: <em>{{ item.created_date|strftime }}</em> | <em>{{ item.updated_date|strftime }}</em></p>
                         <p class="list-group-item-text">Categories:
                             {% for cat in item.categories.all() %}
                                 <span class="badge">{{ cat.name }}</span>&nbsp;
@@ -60,7 +60,7 @@
                         <div class="panel-box">
                             <div class="btn-group">
                                 <a href="#" class="btn btn-sm btn-success col-sm-5">
-                                    <i class="glyphicon glyphicon-new-window"></i> Open item
+                                    <i class="glyphicon glyphicon-new-window"></i> View item details
                                 </a>
                                 {% if item.author == current_user %}
                                 <a href="#" class="btn btn-sm btn-info col-sm-3">

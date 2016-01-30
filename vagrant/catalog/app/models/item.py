@@ -1,4 +1,5 @@
 from .base import *
+import datetime
 from .category import Category
 from .user import User
 from sqlalchemy_imageattach.entity import Image, image_attachment
@@ -36,6 +37,10 @@ class Item(Base):
         lazy='dynamic'
     )
     picture = image_attachment('ItemPicture')
+    created_date = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_date = Column(DateTime,
+                          default=datetime.datetime.utcnow,
+                          onupdate=datetime.datetime.now)
 
     @property
     def serialize(self):
