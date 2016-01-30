@@ -29,13 +29,10 @@ def slugify_category_list(category_list):
         return slugified_list
 
 
-@app.template_filter('strftime')
-def _jinja2_filter_datetime(date, fmt=None):
-    Parser = parser()
-    date = Parser.parse(date)
-    native = date.replace(tzinfo=None)
-    format = '%b %d, %Y'
-    return native.strftime(format)
+@app.template_filter()
+def datetimeformat(datetime):
+    format = '%b %d, %Y %H:%M %p'
+    return datetime.strftime(format)
 
 
 class OpenSelectMultipleField(SelectMultipleField):

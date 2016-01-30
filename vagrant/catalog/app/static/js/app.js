@@ -6,16 +6,6 @@ jQuery(function($){
         maximumSelectionSize: 6,
         width: '100%'
     });
-    $('#filterby').on('click', function() {
-        $('#select2-filterby').select2('enable', this.checked);
-        if (!this.checked) {
-            cachedValues = $('#select2-filterby').val();
-            $('#select2-filterby').val('').change();
-        } else {
-            // restore the values
-            $('#select2-filterby').val(cachedValues).change();
-        }
-    });
     // Create item functions
     window.tagSelSettings = {
         tags: true,
