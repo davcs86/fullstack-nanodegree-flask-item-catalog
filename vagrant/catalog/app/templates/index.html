@@ -10,7 +10,7 @@
 <div class="container">
     <!-- upper section -->
     <div class="row">
-        {{ macros.show_flashed_messages(is_success) }}
+        {{ macros.show_flashed_messages(False, is_index) }}
         <form action="{{url_for('index')}}" id="index_form" method="GET">
             {{ form.page(id='page_field',class='hidden') }}
             <div class="col-xs-12">

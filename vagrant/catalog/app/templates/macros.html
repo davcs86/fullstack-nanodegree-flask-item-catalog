@@ -1,8 +1,10 @@
-{% macro show_flashed_messages(is_success=False) -%}
+{% macro show_flashed_messages(is_success=False, is_index=False) -%}
     {% with messages = get_flashed_messages() %}
     {% if messages %}
         {% if is_success %}
             <div class="alert alert-success col-sm-12">
+        {% elif is_index %}
+            <div class="alert alert-info col-sm-12">
         {% else %}
             <div class="alert alert-danger col-sm-12">
         {% endif %}
