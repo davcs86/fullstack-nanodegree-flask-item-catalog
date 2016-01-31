@@ -24,12 +24,17 @@ class AddItemForm(BaseForm):
                                  ])
     categories = OpenSelectMultipleField('Categories')
     picture = FileField('Item picture')
+    # 0 = unmodified; 1 = replaced; 2 = deleted
+    picture_status = IntegerField('picture_status', default=0)
 
     def validate_picture(form, field):
-        if field.name in request.files:
-            field.data = request.files[field.name]
-            if not allowed_file(field.data.filename):
-                raise ValidationError('Item picture must be an image')
+        if form.picture_status.data == 1:  # validate only if it was modified
+            if field.name in request.files:
+                # store the file
+                field.data = request.files[field.name]
+                if not allowed_file(field.data.filename):
+                    form.picture_status.data = 0
+                    raise ValidationError('Item picture must be an image')
         else:
             field.data = None
 
@@ -53,14 +58,15 @@ class EditItemForm(BaseForm):
     categories = OpenSelectMultipleField('Categories')
     picture = FileField('Item picture')
     # 0 = unmodified; 1 = replaced; 2 = deleted
-    picture_status = IntegerField('picture_status')
+    picture_status = IntegerField('picture_status', default=0)
 
     def validate_picture(form, field):
-        if form.picture_status.data == '1':  # validate only if it was modified
+        if form.picture_status.data == 1:  # validate only if it was modified
             if field.name in request.files:
                 # store the file
                 field.data = request.files[field.name]
                 if not allowed_file(field.data.filename):
+                    form.picture_status.data = 0
                     raise ValidationError('Item picture must be an image')
         else:
             field.data = None
@@ -118,6 +124,7 @@ def item_new():
             else:
                 flash("The item must have at least one category")
     flash_errors(form)
+    form.picture_status.data = 0
     return render_template('item_form.html', form=form, is_success=success)
 
 
@@ -165,13 +172,13 @@ def item_edit(item_id):
                             item_category = Category(name=cat_slug)
                     categories_list.append(item_category)
                 item.categories = categories_list
-                if form.picture_status.data == '2' \
-                   or form.picture_status.data == '1':
+                if form.picture_status.data == 2 \
+                   or form.picture_status.data == 1:
                     # delete the current image
                     current_image = item.picture.first()
                     if current_image is not None:
                         item.picture.remove(current_image)
-                if form.picture_status.data == '1':
+                if form.picture_status.data == 1:
                     if form.picture.data is not None:
                         item.picture.from_blob(
                             form.picture.data.read())
@@ -184,7 +191,6 @@ def item_edit(item_id):
                 form.categories \
                     .choices = [(str(g.id)+'|'+g.name, g.name) for g
                                 in db_session.query(Category).order_by('name')]
-                form.picture_status.data = 0
                 form.categories.data = [str(g.id)+'|'+g.name for g
                                         in item.categories]
             else:
@@ -195,6 +201,7 @@ def item_edit(item_id):
     current_image = item.picture.first()
     if current_image is not None:
         item_image_url = item.picture.locate()
+    form.picture_status.data = '0'
     return render_template('item_form.html', item_image_url=item_image_url,
                            form=form, is_success=success, is_edit=True,
                            item_id=item.id)

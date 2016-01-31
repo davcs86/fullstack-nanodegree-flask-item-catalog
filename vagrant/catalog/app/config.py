@@ -16,12 +16,8 @@ class Config(object):
     ENDPOINT_RESULTS_PER_PAGE = 25
     OAUTH_CREDENTIALS = {
         'google': {
-            'id': '',
-            'secret': ''
-        },
-        'facebook': {
-            'id': '1695511664028594',
-            'secret': '2849bb510817adc71821d7daff76e090'
+            'id': '623996370459-5e4jvfnnimarmljmqoc8lasgtiur4qh3.apps.googleusercontent.com',
+            'secret': 'LvTacdmNwH_CwPcbsKdMfI42'
         },
         'twitter': {
             'id': 'WToKwwI3emnoiMUjDQWoDGp6e',
@@ -45,4 +41,4 @@ class DevelopmentConfig(Config):
     DEBUG = True
     DEVELOPMENT = True
     PORT = 5000
-    RESULTS_PER_PAGE = 1
+    # RESULTS_PER_PAGE = 10

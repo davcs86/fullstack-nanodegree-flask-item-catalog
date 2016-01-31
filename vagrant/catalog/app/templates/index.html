@@ -47,37 +47,35 @@
     <div class="row">
         <div class="col-xs-12">
             {% for item in items %}
-                <div class="list-group">
-                    <div class="list-group-item">
-                        <div class="media">
-                            <div class="media-left media-middle">
-                                <img src="{{ item.picture.locate() }}" alt="Item image" class="item-preview-img"/>
-                            </div>
-                            <div class="media-body">
-                                <h3 class="list-group-item-heading">{{ item.name|e }}</h3>
-                                <p class="list-group-item-text">Author: <em>{{ current_user.nickname }}</em></p>
-                                <p class="list-group-item-text">Created: <em>{{ momentjs(item.created_date).calendar() }}</em> | Updated: <em>{{ momentjs(item.updated_date).calendar() }}</em></p>
-                                <p class="list-group-item-text">Categories:
-                                    {% for cat in item.categories.all() %}
-                                        <span class="badge">{{ cat.name }}</span>&nbsp;
-                                    {% endfor %}
-                                </p>
-                                <div class="panel-box">
-                                    <a href="{{url_for('item_detail', item_id=item.id)}}" class="btn btn-sm btn-success">
-                                        <i class="glyphicon glyphicon-new-window"></i> View item details
-                                    </a>
-                                    {% if item.author == current_user %}
-                                    <a href="{{url_for('item_edit', item_id=item.id)}}" class="btn btn-sm btn-info">
-                                        <i class="glyphicon glyphicon-edit"></i> Edit
-                                    </a>
-                                    <form action="{{url_for('item_delete', item_id=item.id)}}" class="form-delete" method="POST">
-                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                                        <button type="submit" class="btn btn-sm btn-danger">
-                                            <i class="glyphicon glyphicon-remove"></i> Delete
-                                        </button>
-                                    </form>
-                                    {% endif %}
-                                </div>
+                <div class="list-group-item">
+                    <div class="media">
+                        <div class="media-left media-middle">
+                            <img src="{{ item.default_picture_url }}" alt="Item image" class="item-preview-img"/>
+                        </div>
+                        <div class="media-body">
+                            <h3 class="list-group-item-heading">{{ item.name|e }}</h3>
+                            <p class="list-group-item-text">Author: <em>{{ current_user.nickname }}</em></p>
+                            <p class="list-group-item-text">Created: <em>{{ momentjs(item.created_date).calendar() }}</em> | Updated: <em>{{ momentjs(item.updated_date).calendar() }}</em></p>
+                            <p class="list-group-item-text">Categories:
+                                {% for cat in item.categories.all() %}
+                                    <span class="badge">{{ cat.name }}</span>&nbsp;
+                                {% endfor %}
+                            </p>
+                            <div class="panel-box">
+                                <a href="{{url_for('item_detail', item_id=item.id)}}" class="btn btn-sm btn-success">
+                                    <i class="glyphicon glyphicon-new-window"></i> View item details
+                                </a>
+                                {% if item.author == current_user %}
+                                <a href="{{url_for('item_edit', item_id=item.id)}}" class="btn btn-sm btn-info">
+                                    <i class="glyphicon glyphicon-edit"></i> Edit
+                                </a>
+                                <form action="{{url_for('item_delete', item_id=item.id)}}" class="form-delete" method="POST">
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="glyphicon glyphicon-remove"></i> Delete
+                                    </button>
+                                </form>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

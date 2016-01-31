@@ -14,8 +14,6 @@ def oauth_unlink(provider):
     user = current_user
     if provider == 'google':
         user.google_id = ''
-    elif provider == 'facebook':
-        user.facebook_id = ''
     elif provider == 'twitter':
         user.twitter_id = ''
     elif provider == 'github':
@@ -37,7 +35,6 @@ def oauth_callback(provider):
     else:
         user = db_session.query(User) \
                 .filter((User.google_id == social_id) |
-                        (User.facebook_id == social_id) |
                         (User.twitter_id == social_id) |
                         (User.github_id == social_id)) \
                 .first()
@@ -49,8 +46,6 @@ def oauth_callback(provider):
             redirect_to = 'me'
     if provider == 'google':
         user.google_id = social_id
-    elif provider == 'facebook':
-        user.facebook_id = social_id
     elif provider == 'twitter':
         user.twitter_id = social_id
     elif provider == 'github':

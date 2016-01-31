@@ -58,16 +58,6 @@
                 </form>
                 <div class="row">
                     <div class="col-md-6" style="padding: 6px;">
-                        <a href="{{url_for('oauth_authorize', provider='facebook')}}" class="btn btn-block btn-social btn-facebook">
-                            <span class="fa fa-facebook"></span>
-                            {% if is_register == True %}
-                                Sign up with Facebook
-                            {% else %}
-                                Sign in with Facebook
-                            {% endif %}
-                        </a>
-                    </div>
-                    <div class="col-md-6" style="padding: 6px;">
                         <a href="{{url_for('oauth_authorize', provider='google')}}" class="btn btn-block btn-social btn-google">
                             <span class="fa fa-google"></span>
                             {% if is_register == True %}

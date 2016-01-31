@@ -42,6 +42,18 @@ class Item(Base):
                           onupdate=datetime.datetime.utcnow)
 
     @property
+    def default_picture_url(self):
+        picture_url = 'https://placehold.it/256x256'
+        first_picture = self.picture.first()
+        if first_picture is not None:
+            try:
+                picture_url = first_picture.locate()
+            except:
+                # ignore it
+                print sys.exc_info()[0]
+        return picture_url
+
+    @property
     def serialize(self):
         """Return object data in easily serializeable format"""
         item_picture = self.picture.first()

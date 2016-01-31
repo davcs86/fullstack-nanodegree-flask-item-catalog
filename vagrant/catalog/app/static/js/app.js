@@ -60,6 +60,7 @@ jQuery(function($){
 
     window.createPreviews = function(previewUrl) {
         var previewArr = [];
+        $('#picture_status').val(0);
         if (typeof(previewUrl)!='undefined'){
             previewArr.push("<img src='"+previewUrl+"' class='file-preview-image' alt='Item picture' title='Item picture'>");
         }

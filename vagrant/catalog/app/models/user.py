@@ -9,7 +9,6 @@ class User(UserMixin, Base):
     nickname = Column(String(32), nullable=False, unique=True)
     password = Column(String(128))
     google_id = Column(String(64))
-    facebook_id = Column(String(64))
     twitter_id = Column(String(64))
     github_id = Column(String(64))
 
