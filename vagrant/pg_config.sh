@@ -19,7 +19,7 @@ pip install flask-sqlalchemy
 pip install wtforms
 pip install awesome-slugify
 pip install SQLAlchemy-ImageAttach
-pip install python-dateutil
+pip install Werkzeug
 
 su postgres -c 'createuser -dRS vagrant'
 su vagrant -c 'createdb catalog'

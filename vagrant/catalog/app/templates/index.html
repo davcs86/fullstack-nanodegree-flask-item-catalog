@@ -11,10 +11,10 @@
     <!-- upper section -->
     <div class="row">
         {{ macros.show_flashed_messages(is_success) }}
-        <form action="{{url_for('index')}}" method="GET">
+        <form action="{{url_for('index')}}" id="index_form" method="GET">
             {{ form.page(id='page_field',class='hidden') }}
             <div class="col-xs-12">
-                <h3><i class="glyphicon glyphicon-briefcase"></i> Items
+                <h3><i class="glyphicon glyphicon-briefcase"></i> Latest items
                     {% if current_user.is_authenticated %}
                     <a href="{{url_for('item_new')}}" class="btn btn-info float-right"><i class="glyphicon glyphicon-plus-sign"></i> Create item</a>
                     {% endif %}
@@ -56,26 +56,27 @@
                             <div class="media-body">
                                 <h3 class="list-group-item-heading">{{ item.name|e }}</h3>
                                 <p class="list-group-item-text">Author: <em>{{ current_user.nickname }}</em></p>
-                                <p class="list-group-item-text">Created at: <em>{{ item.created_date|datetimeformat }}</em> | Updated at: <em>{{ item.updated_date|datetimeformat }}</em></p>
+                                <p class="list-group-item-text">Created: <em>{{ momentjs(item.created_date).calendar() }}</em> | Updated: <em>{{ momentjs(item.updated_date).calendar() }}</em></p>
                                 <p class="list-group-item-text">Categories:
                                     {% for cat in item.categories.all() %}
                                         <span class="badge">{{ cat.name }}</span>&nbsp;
                                     {% endfor %}
                                 </p>
                                 <div class="panel-box">
-                                    <div class="btn-group">
-                                        <a href="{{url_for('item_detail', item_id=item.id)}}" class="btn btn-sm btn-success col-sm-6">
-                                            <i class="glyphicon glyphicon-new-window"></i> View item details
-                                        </a>
-                                        {% if item.author == current_user %}
-                                        <a href="{{url_for('item_edit', item_id=item.id)}}" class="btn btn-sm btn-info col-sm-3">
-                                            <i class="glyphicon glyphicon-edit"></i> Edit
-                                        </a>
-                                        <a href="{{url_for('item_edit', item_id=item.id)}}" class="btn btn-sm btn-danger col-sm-3">
+                                    <a href="{{url_for('item_detail', item_id=item.id)}}" class="btn btn-sm btn-success">
+                                        <i class="glyphicon glyphicon-new-window"></i> View item details
+                                    </a>
+                                    {% if item.author == current_user %}
+                                    <a href="{{url_for('item_edit', item_id=item.id)}}" class="btn btn-sm btn-info">
+                                        <i class="glyphicon glyphicon-edit"></i> Edit
+                                    </a>
+                                    <form action="{{url_for('item_delete', item_id=item.id)}}" class="form-delete" method="POST">
+                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-danger">
                                             <i class="glyphicon glyphicon-remove"></i> Delete
-                                        </a>
-                                        {% endif %}
-                                    </div>
+                                        </button>
+                                    </form>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -87,7 +88,10 @@
     {{ macros.render_pagination(pagination) }}
 </div><!--/container-->
 <!-- /Main -->
-
-<footer class="text-center">Project # 3 for Udacity's fullstack nanodegree by <a href="http://github.com/davcs86"><strong>davcs86</strong></a></footer>
-
+<footer class="text-center">
+    <p>
+        <i class="glyphicon glyphicon-list-alt"></i> Feeds: <a href="{{ url_for('recent_feed') }}">Atom</a> | <a href="{{ url_for('recent_json') }}">JSON</a>
+    </p>
+    Project # 3 for Udacity's fullstack nanodegree by <a href="http://github.com/davcs86"><strong>davcs86</strong></a>
+</footer>
 {% endblock %}

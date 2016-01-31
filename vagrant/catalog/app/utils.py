@@ -1,8 +1,8 @@
 from flask import flash
 from wtforms import SelectMultipleField
 from slugify import Slugify
-from dateutil.parser import parser
 from .app_setup import app
+from jinja2 import Markup
 # Misc utils methods
 
 
@@ -29,10 +29,25 @@ def slugify_category_list(category_list):
         return slugified_list
 
 
-@app.template_filter()
-def datetimeformat(datetime):
-    format = '%b %d, %Y %H:%M %p'
-    return datetime.strftime(format)
+class momentjs(object):
+    # Taken from: http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiii-dates-and-times
+    def __init__(self, timestamp):
+        self.timestamp = timestamp
+
+    def render(self, format):
+        return \
+            Markup("<script>\ndocument.write(moment(\"%s\").%s);\n</script>"
+                   % (self.timestamp.strftime("%Y-%m-%dT%H:%M:%S Z"), format))
+
+    def format(self, fmt):
+        return self.render("format(\"%s\")" % fmt)
+
+    def calendar(self):
+        return self.render("calendar()")
+
+    def fromNow(self):
+        return self.render("fromNow()")
+app.jinja_env.globals['momentjs'] = momentjs
 
 
 class OpenSelectMultipleField(SelectMultipleField):

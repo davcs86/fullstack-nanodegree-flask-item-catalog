@@ -13,6 +13,7 @@ class Config(object):
     ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
     SQLALCHEMY_DATABASE_URI = "postgresql://vagrant:vagrant@localhost/catalog"
     RESULTS_PER_PAGE = 10
+    ENDPOINT_RESULTS_PER_PAGE = 25
     OAUTH_CREDENTIALS = {
         'google': {
             'id': '',
@@ -44,4 +45,4 @@ class DevelopmentConfig(Config):
     DEBUG = True
     DEVELOPMENT = True
     PORT = 5000
-    RESULTS_PER_PAGE = 2
+    RESULTS_PER_PAGE = 1

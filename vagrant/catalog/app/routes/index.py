@@ -1,5 +1,4 @@
 from .. import *
-import sqlalchemy as is_
 import flask_sqlalchemy as sqlalchemy
 
 
@@ -37,6 +36,7 @@ def index():
         .Pagination(items_query, form.page.data, app_config.RESULTS_PER_PAGE,
                     items_query.count(), None)
     items = items_query \
+        .order_by(Item.created_date.desc()) \
         .limit(app_config.RESULTS_PER_PAGE) \
         .offset((page - 1) * app_config.RESULTS_PER_PAGE).all()
     return render_template('index.html', form=form,

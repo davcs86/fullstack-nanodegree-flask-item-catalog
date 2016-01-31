@@ -6,6 +6,17 @@ jQuery(function($){
         maximumSelectionSize: 6,
         width: '100%'
     });
+    $('.goto-pagination').click(function(evt){
+        evt.preventDefault();
+        // update the page and submit the Form
+        $('#page_field').val($(this).data('page'));
+        $('#index_form').trigger('submit');
+    });
+    $('.form-delete').submit(function(evt){
+        if (!confirm('Are you sure of delete this item?')){
+            evt.preventDefault();
+        }
+    })
     // Create item functions
     window.tagSelSettings = {
         tags: true,

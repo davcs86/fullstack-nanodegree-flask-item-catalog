@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Item catalog">
         <meta name="author" content="David Castillo <davcs86@gmail.com>">
-
+        <link href="{{ url_for('recent_feed') }}" rel="alternate" title="Recent Items" type="application/atom+xml"></link>
         <!-- Bootstrap core CSS -->
         <link href="{{ url_for('static', filename='bower_components/bootstrap/dist/css/bootstrap.min.css') }}" rel="stylesheet"></link>
         <link href="{{ url_for('static', filename='bower_components/bootstrap-social/bootstrap-social.css') }}" rel="stylesheet"></link>
@@ -19,6 +19,7 @@
         <script src="{{ url_for('static', filename='bower_components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
         <script src="{{ url_for('static', filename='bower_components/select2/dist/js/select2.min.js') }}"></script>
         <script src="{{ url_for('static', filename='bower_components/bootstrap-fileinput/js/fileinput.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='bower_components/moment/min/moment-with-locales.min.js') }}"></script>
 
         <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet"></link>
         <script src="{{ url_for('static', filename='js/app.js') }}"></script>
@@ -65,5 +66,6 @@
         <!-- /Header -->
         {% block body %}
         {% endblock %}
+
     </body>
 </html>

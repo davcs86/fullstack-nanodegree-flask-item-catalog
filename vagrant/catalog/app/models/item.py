@@ -44,11 +44,16 @@ class Item(Base):
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
+        item_picture = self.picture.first()
         return {
-            'name': self.name,
+            'author_id': self.author.id,
+            'author': self.author.nickname,
+            'categories': [{'id': g.id, 'name': g.name}
+                           for g in self.categories],
             'description': self.description,
             'id': self.id,
-            'categories': self.categories,
-            'author_id': self.author.id,
-            'author': self.author.name
+            'title': self.name,
+            'updated': self.updated_date,
+            'published': self.created_date,
+            'images': [g.locate() for g in self.picture.all()]
         }

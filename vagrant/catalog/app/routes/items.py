@@ -208,3 +208,20 @@ def item_detail(item_id):
         flash('Item does not exist')
         return redirect(url_for('index'))
     return render_template('item_detail.html', item=item)
+
+
+@app.route('/item/delete/<int:item_id>', methods=['POST'])
+@login_required
+def item_delete(item_id):
+    item = db_session.query(Item) \
+                     .filter(Item.id == item_id).first()
+    if item is not None:
+        if item.author_id == current_user.id:
+            db_session.delete(item)
+            db_session.commit()
+            flash("Item deleted successfully")
+        else:
+            flash("You can only delete your own items")
+    else:
+        flash("Item does not exist")
+    return redirect(url_for('index'))
