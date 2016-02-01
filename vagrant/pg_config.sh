@@ -7,6 +7,7 @@ apt-get -qqy install libmagickwand-dev npm git nodejs-legacy
 pip install oauth2client
 pip install requests
 pip install httplib2
+pip install passlib
 pip install flask-httpauth
 pip install flask-login
 pip install rauth
