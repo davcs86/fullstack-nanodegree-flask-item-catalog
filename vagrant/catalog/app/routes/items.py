@@ -1,9 +1,6 @@
 from .. import *
 
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
+# Item-related WTForms definitions & views
 
 
 class AddItemForm(BaseForm):
@@ -75,13 +72,18 @@ class EditItemForm(BaseForm):
 @app.route('/item/new', methods=['GET', 'POST'])
 @login_required
 def item_new():
+    # New item view
+    # - Displays the new item view and
+    # - allows to add a new item to logged in users
     success = False
     # WTF Form to handle the submitted data
     form = AddItemForm(request.form)
+    # Fill the category selectbox from the database
     form.categories.choices = [(str(g.id)+'|'+g.name, g.name) for g
                                in db_session.query(Category).order_by('name')]
     if request.method == 'POST':
         categories_selected = slugify_category_list(form.categories.data)
+        # Add the new categories to the selectbox
         form.categories.choices += [(x[0], x[2]) for x in
                                     categories_selected
                                     if (x[0], x[2]) not in
@@ -109,9 +111,11 @@ def item_new():
                     categories_list.append(item_category)
                 item.categories = categories_list
                 item.author = current_user
+                # Add item image
                 if form.picture.data is not None:
                     item.picture.from_blob(
                         form.picture.data.read())
+                # Save the new user
                 db_session.add(item)
                 db_session.commit()
                 success = True
@@ -131,6 +135,10 @@ def item_new():
 @app.route('/item/edit/<int:item_id>', methods=['GET', 'POST'])
 @login_required
 def item_edit(item_id):
+    # Edit item view
+    # - Displays the edit item view and
+    # - allows to edit an item to logged in users
+    # - only if the user is the item's owner
     success = False
     # verify if the item exists and if current_user is its author
     item = db_session.query(Item) \
@@ -141,10 +149,12 @@ def item_edit(item_id):
         return redirect(url_for('index'))
     # WTF Form to handle the submitted data
     form = EditItemForm(request.form, item)
+    # Fill the category selectbox from the database
     form.categories.choices = [(str(g.id)+'|'+g.name, g.name) for g
                                in db_session.query(Category).order_by('name')]
     if request.method == 'GET':
         form.picture_status.data = 0
+        # Load the selected categories from the item.categories
         form.categories.data = [str(g.id)+'|'+g.name for g in item.categories]
     elif request.method == 'POST':
         categories_selected = slugify_category_list(form.categories.data)
@@ -180,8 +190,10 @@ def item_edit(item_id):
                         item.picture.remove(current_image)
                 if form.picture_status.data == 1:
                     if form.picture.data is not None:
+                        # save the new image
                         item.picture.from_blob(
                             form.picture.data.read())
+                # save the updated item
                 db_session.merge(item)
                 db_session.commit()
                 success = True
@@ -197,18 +209,17 @@ def item_edit(item_id):
                 flash("The item must have at least one category")
     flash_errors(form)
     # retrieve the current item image
-    item_image_url = False
-    current_image = item.picture.first()
-    if current_image is not None:
-        item_image_url = item.picture.locate()
+    item_image_url = item.default_picture_url
     form.picture_status.data = '0'
     return render_template('item_form.html', item_image_url=item_image_url,
                            form=form, is_success=success, is_edit=True,
                            item_id=item.id)
 
 
-@app.route('/item/detail/<int:item_id>', methods=['GET', 'POST'])
+@app.route('/item/detail/<int:item_id>')
 def item_detail(item_id):
+    # Detail item view
+    # - Displays the detail item view, redirect to index if item doesn't exist
     item = db_session.query(Item) \
                      .filter(Item.id == item_id).first()
     if item is None:
@@ -220,6 +231,10 @@ def item_detail(item_id):
 @app.route('/item/delete/<int:item_id>', methods=['POST'])
 @login_required
 def item_delete(item_id):
+    # Delete item action
+    # - Receive the delete request for an item and
+    # - allows to delete an item to logged in users
+    # - only if the user is the item's owner
     item = db_session.query(Item) \
                      .filter(Item.id == item_id).first()
     if item is not None:

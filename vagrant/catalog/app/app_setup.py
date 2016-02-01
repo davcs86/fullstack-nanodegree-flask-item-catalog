@@ -9,20 +9,29 @@ from sqlalchemy_imageattach.stores.fs import HttpExposedFileSystemStore
 from sqlalchemy_imageattach.context import (pop_store_context,
                                             push_store_context)
 
+# Create the Flask application, then load the settings values
+
 app = Flask(__name__)
 app.config.from_object(app_config)
+
+# Add the SeaSurf extension to the app
+# https://flask-seasurf.readthedocs.org/en/latest/
 csrf = SeaSurf()
 csrf.init_app(app)
+
+# Add the storage store for the images
+# http://sqlalchemy-imageattach.readthedocs.org/en/0.9.0/stores/fs.html#sqlalchemy_imageattach.stores.fs.HttpExposedFileSystemStore
 fs_store = HttpExposedFileSystemStore('app/static', 'images/')
 app.wsgi_app = fs_store.wsgi_middleware(app.wsgi_app)
 
-engine = create_engine(app_config.SQLALCHEMY_DATABASE_URI)
+# Add the database, and creates the database session
+engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 Base.metadata.create_all(engine)
 Base.metadata.bind = engine
-
 DBSession = sessionmaker(bind=engine)
 db_session = DBSession()
 
+# Add the Flask-Login extension to the app
 login_manager = LoginManager()
 login_manager.init_app(app)
 

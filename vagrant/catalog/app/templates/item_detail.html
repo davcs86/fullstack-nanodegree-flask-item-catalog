@@ -30,7 +30,7 @@
                     </div>
                     <div class="col-md-7">
                         <h3 class="list-group-item-heading">{{ item.name|e }}</h3>
-                        <p class="list-group-item-text"><strong>Author:</strong> <em>{{ current_user.nickname }}</em></p>
+                        <p class="list-group-item-text"><strong>Author:</strong> <em>{{ item.author.nickname }}</em></p>
                         <p class="list-group-item-text"><strong>Created:</strong> <em>{{ momentjs(item.created_date).calendar() }}</em></p>
                         <p class="list-group-item-text"><strong>Updated:</strong> <em>{{ momentjs(item.updated_date).calendar() }}</em></p>
                         <p class="list-group-item-text"><strong>Categories:</strong>

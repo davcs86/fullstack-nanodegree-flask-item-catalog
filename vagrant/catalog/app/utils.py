@@ -7,6 +7,7 @@ from jinja2 import Markup
 
 
 def flash_errors(form):
+    # Create a flash message for all the WTForms errors
     # Taken from http://flask.pocoo.org/snippets/12/
     form_errors = getattr(form, 'errors', {'items': []})
     for field, errors in form_errors.items():
@@ -18,6 +19,7 @@ def flash_errors(form):
 
 
 def slugify_category_list(category_list):
+    # "Slugify" the categories received from the New/Edit item forms
     if category_list is not None:
         slugifier = Slugify(to_lower=True)
         slugified_list = []
@@ -29,7 +31,14 @@ def slugify_category_list(category_list):
         return slugified_list
 
 
+def allowed_file(filename):
+    # Return if the file extension is in the list of allowed extensions
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
+
+
 class momentjs(object):
+    # Class to display the dates in local format, using momentjs
     # Taken from: http://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xiii-dates-and-times
     def __init__(self, timestamp):
         self.timestamp = timestamp

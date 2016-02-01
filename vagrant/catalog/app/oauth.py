@@ -67,7 +67,7 @@ class GoogleSignIn(OAuthSignIn):
         me = oauth_session.get('').json()
         return 'google$'+me['name'], me['name']
 
-
+# Facebook is disabled since doesn't allow localhost urls
 # class FacebookSignIn(OAuthSignIn):
 #     def __init__(self):
 #         super(FacebookSignIn, self).__init__('facebook')
