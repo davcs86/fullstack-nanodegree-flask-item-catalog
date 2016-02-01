@@ -16,10 +16,10 @@ Project #3 for Udacity's Full stack web developer nanodegree program by davcs86
     $> cd fullstack-nanodegree-flask-item-catalog/vagrant
     ```
 
-1. Init the vagrant image ([Vagrant installation guide](https://www.vagrantup.com/docs/installation/)):
+1. Start the vagrant image ([Vagrant installation guide](https://www.vagrantup.com/docs/installation/)):
 
     ```bash
-    $> vagrant init
+    $> vagrant up
     ```
 
 1. Login to the vagrant instance via ssh
